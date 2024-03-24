@@ -1,7 +1,7 @@
 version: '3'
 services:
   kong-database:
-    image: postgres:16
+    image: postgres:16.2
     container_name: kong-database
     environment:
       POSTGRES_USER: kong
@@ -9,6 +9,8 @@ services:
       POSTGRES_DB: kong
     networks:
       - kong-net
+    volumes:
+      - kong-db-data:/var/lib/postgresql/data
 
   kong:
     image: kong:latest
@@ -34,20 +36,26 @@ services:
     networks:
       - kong-net
 
+  docs:
+    build: ./docs
+    networks:
+      - kong-net
+
   python-service:
     build: ./python_micro
     networks:
       - kong-net
-    ports:
-      - "3001:3001"
 
   node-service:
     build: ./node_serv
     ports:
-      - "3000:3000"
+      - "3002:3000"
     networks:
       - kong-net
 
 networks:
   kong-net:
     driver: bridge
+
+volumes:
+  kong-db-data:
