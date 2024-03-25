@@ -12,7 +12,7 @@ const swaggerDocument = YAML.load(path.join(__dirname, '../api-docs.yml'));
 
 // Serve swagger
 app.use('/docs', (req: Request, res: Response, next: NextFunction) => {
-  if (req.originalUrl == "/api-docs") return res.redirect('api-docs/')
+  if (req.originalUrl == "/docs") return res.redirect('docs/')
   next()
 }, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
