@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import path from 'path';
@@ -11,7 +11,10 @@ const port = 3000;
 const swaggerDocument = YAML.load(path.join(__dirname, '../api-docs.yml'));
 
 // Serve swagger
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/docs', (req: Request, res: Response, next: NextFunction) => {
+  if (req.originalUrl == "/api-docs") return res.redirect('api-docs/')
+  next()
+}, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

@@ -2,3 +2,4 @@ node_modules/
 py_cache/
 venv/
 .vscode/
+*tar*
