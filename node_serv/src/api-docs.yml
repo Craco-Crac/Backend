@@ -20,7 +20,53 @@ paths:
                   $ref: '#/components/schemas/User'
         '500':
           description: Internal server error
-
+  /send:
+    post:
+      summary: Send a message
+      description: Sends a message to RabbitMQ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  example: "Hello, RabbitMQ!"
+      responses:
+        "200":
+          description: Message successfully sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Message sent to RabbitMQ"
+        "400":
+          description: Bad request - Message is required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Message is required"
+        "500":
+          description: Internal Server Error - Error sending message to RabbitMQ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error sending message to RabbitMQ"
   /users/{id}:
     get:
       tags:

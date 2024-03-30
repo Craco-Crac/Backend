@@ -2,53 +2,13 @@ import express, { Request, Response, NextFunction } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import path from 'path';
-import connectRabbitMQ from './rabbitmq';
-import { Channel, ConsumeMessage } from 'amqplib';
+import {initConnection, startConsumer, stopConsumer, sendMessage} from './rabbitmq';
 
 const app = express();
 const port = 3000;
 
-let consumerTag: string | undefined;
-let channelGlog: Channel | undefined;
-async function startConsumer() {
-  try {
-    const { channel } = (await connectRabbitMQ()) || { channel: null };
-    if (!channel) {
-      console.error('Failed to connect to RabbitMQ');
-      return;
-    }
-    channelGlog = channel;
-    const queue = 'hello';
-
-    await channel.assertQueue(queue, {
-      durable: false,
-    });
-
-    console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
-
-    const result = await channel.consume(queue, (msg: ConsumeMessage | null) => {
-      if (msg !== null) {
-        console.log(" [x] Received '%s'", msg.content.toString());
-        channel.ack(msg);
-      }
-    }, {
-      noAck: false,
-    });
-
-    consumerTag = result.consumerTag;
-  } catch (error) {
-    console.error('Error starting consumer:', error);
-  }
-}
-
-async function stopConsumer(channel: Channel) {
-  if (consumerTag) {
-    await channel.cancel(consumerTag);
-    console.log(" [x] Stopped listening for messages");
-    consumerTag = undefined; // Reset the consumer tag
-  }
-}
-//startConsumer();
+app.use(express.json());
+// initConnection()
 
 // Generate swagger specification
 const swaggerDocument = YAML.load(path.join(__dirname, './api-docs.yml'));
@@ -91,27 +51,14 @@ app.get('/users/:id', (req: Request, res: Response) => {
   res.status(200).json(user);
 });
 
-app.get('/send', async (req: Request, res: Response) => {
-  const message = "work";//req.body;
-
+app.post('/send', async (req: Request, res: Response) => {
+  const message = req.body.message;
   if (!message) {
     return res.status(400).send({ error: 'Message is required' });
   }
 
   try {
-    const { channel } = (await connectRabbitMQ()) || { channel: null };
-    if (!channel) {
-      return res.status(500).send({ error: 'Failed to connect to RabbitMQ' });
-    }
-
-    const queue = 'testQueue';
-    await channel.assertQueue(queue, {
-      durable: false,
-    });
-
-    channel.sendToQueue(queue, Buffer.from(message));
-    console.log(" [x] Sent '%s'", message);
-
+    await sendMessage(message);
     res.send({ message: "Message sent to RabbitMQ" });
   } catch (error) {
     console.error('Error sending message to RabbitMQ:', error);
@@ -120,7 +67,7 @@ app.get('/send', async (req: Request, res: Response) => {
 });
 
 app.get('/stop', async (req: Request, res: Response) => {
-  if (channelGlog) { stopConsumer(channelGlog); }
+  stopConsumer();
 });
 
 app.get('/start', async (req: Request, res: Response) => {
