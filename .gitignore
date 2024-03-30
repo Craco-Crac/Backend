@@ -3,3 +3,8 @@ py_cache/
 venv/
 .vscode/
 *tar*
+/rabbit-mq/data/
+*.pot
+*.pyc
+__pycache__
+.idea

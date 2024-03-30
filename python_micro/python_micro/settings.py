@@ -78,12 +78,8 @@ WSGI_APPLICATION = 'python_micro.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'kong',
-        'USER': 'kong',
-        'PASSWORD': 'kong',
-        'HOST': 'kong-database',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'pythondb',
     }
 }
 

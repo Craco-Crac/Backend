@@ -48,7 +48,9 @@ services:
       - 15672:15672
       - 5672:5672
     volumes:
-      - ./rabbit-mq/data:/var/lib/rabbitmq
+      - rabbit-mq-data:/var/lib/rabbitmq
+      - rabbit-mq-logs:/var/log/rabbitmq
+      - ./rabbit-mq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     networks:
       - kong-net
 
@@ -74,3 +76,5 @@ networks:
 
 volumes:
   kong-db-data:
+  rabbit-mq-data:
+  rabbit-mq-logs:

@@ -5,7 +5,7 @@ import pika
 
 def home(request):
     credentials = pika.PlainCredentials('rmuser', 'rmpassword')
-    parameters = pika.ConnectionParameters('rabbitmq', credentials=credentials)
+    parameters = pika.ConnectionParameters('localhost', credentials=credentials)
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
 
@@ -13,7 +13,7 @@ def home(request):
 
     channel.basic_publish(exchange='',
                           routing_key='hello',
-                          body='Hello World!')
+                          body='Kolya!')
 
     connection.close()
     return HttpResponse('<h1>Welcome to Home Page</h1>')
