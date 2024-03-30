@@ -14,7 +14,6 @@ def home(request):
     channel.basic_publish(exchange='',
                           routing_key='hello',
                           body='Hello World!')
-    print(" [x] Sent 'Hello123 World!'")
 
     connection.close()
     return HttpResponse('<h1>Welcome to Home Page</h1>')
