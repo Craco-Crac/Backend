@@ -70,11 +70,40 @@ services:
     networks:
       - kong-net
 
+  users-database:
+    image: postgres:16.2
+    container_name: users-database
+    environment:
+      POSTGRES_USER: users_service
+      POSTGRES_PASSWORD: users_password
+      POSTGRES_DB: users_db
+    volumes:
+      - users-db-data:/var/lib/postgresql/data
+    networks:
+      - users-net
+
+  user-manage:
+    build: ./user_manage
+    container_name: user_manager
+    environment:
+      DB_HOST: users-database
+      DB_USER: user_manage
+      DB_PASS: users_password
+      DB_NAME: users_db
+    depends_on:
+      - users-database
+    networks:
+      - users-net
+      - kong-net
+
 networks:
   kong-net:
+    driver: bridge
+  users-net:
     driver: bridge
 
 volumes:
   kong-db-data:
   rabbit-mq-data:
   rabbit-mq-logs:
+  users-db-data:

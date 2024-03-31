@@ -73,6 +73,7 @@ app.get('/stop', async (req: Request, res: Response) => {
 app.get('/start', async (req: Request, res: Response) => {
   startConsumer()
 });
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
