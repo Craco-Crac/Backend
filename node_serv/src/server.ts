@@ -11,7 +11,7 @@ app.use(express.json());
 // initConnection()
 
 // Generate swagger specification
-const swaggerDocument = YAML.load(path.join(__dirname, './api-docs.yml'));
+const swaggerDocument = YAML.load(path.join(__dirname, '../api-docs.yml'));
 
 // Serve swagger
 app.use('/docs', (req: Request, res: Response, next: NextFunction) => {

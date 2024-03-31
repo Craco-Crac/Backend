@@ -6,9 +6,9 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "start": "nodemon --exec ts-node src/server.ts",
+    "start": "pm2-runtime start ecosystem.config.cjs",
     "build": "tsc",
-    "dev": "ts-node src/server.ts",
+    "dev": "nodemon --exec ts-node src/server.ts",
     "watch": "tsc -w"
   },
   "keywords": [],
@@ -37,6 +37,7 @@
     "eslint": "^8.57.0",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3"
   }
 }
