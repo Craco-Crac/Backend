@@ -87,7 +87,7 @@ services:
     container_name: user_manager
     environment:
       DB_HOST: users-database
-      DB_USER: user_manage
+      DB_USER: users_service
       DB_PASS: users_password
       DB_NAME: users_db
     depends_on:
