@@ -1,0 +1,177 @@
+_format_version: "3.0"
+_transform: false
+
+parameters:
+  - value: 55495391-1ae1-4b10-bc3b-ee9e3aea343b
+    created_at: ~
+    key: cluster_id
+services:
+  - created_at: 1711302100
+    updated_at: 1711302100
+    connect_timeout: 60000
+    read_timeout: 60000
+    tls_verify: ~
+    name: python
+    tls_verify_depth: ~
+    path: ~
+    id: 4c8780ff-83ee-4ace-9f84-2c9ba8995baa
+    client_certificate: ~
+    retries: 5
+    host: python-service
+    port: 3000
+    tags: ~
+    write_timeout: 60000
+    enabled: true
+    ca_certificates: ~
+    protocol: http
+  - created_at: 1711319584
+    updated_at: 1711319584
+    connect_timeout: 60000
+    read_timeout: 60000
+    tls_verify: ~
+    name: docs
+    tls_verify_depth: ~
+    path: ~
+    id: eb56f8e8-034b-4e07-a69a-ed433a49211c
+    client_certificate: ~
+    retries: 5
+    host: docs
+    port: 3000
+    tags: ~
+    write_timeout: 60000
+    enabled: true
+    ca_certificates: ~
+    protocol: http
+  - created_at: 1711291153
+    updated_at: 1711291153
+    connect_timeout: 60000
+    read_timeout: 60000
+    tls_verify: ~
+    name: node_s
+    tls_verify_depth: ~
+    path: ~
+    id: fba18bfb-c799-4ce2-a5e1-3bd9a3124d8c
+    client_certificate: ~
+    retries: 5
+    host: node-service
+    port: 3000
+    tags: ~
+    write_timeout: 60000
+    enabled: true
+    ca_certificates: ~
+    protocol: http
+  - created_at: 1711898626
+    updated_at: 1711898626
+    connect_timeout: 60000
+    read_timeout: 60000
+    tls_verify: ~
+    name: user_management
+    tls_verify_depth: ~
+    path: ~
+    id: fea35f20-7c43-47f5-8e67-1f525f5ffad0
+    client_certificate: ~
+    retries: 5
+    host: user-manage
+    port: 3000
+    tags: ~
+    write_timeout: 60000
+    enabled: true
+    ca_certificates: ~
+    protocol: http
+routes:
+  - regex_priority: 0
+    created_at: 1711898663
+    updated_at: 1711898711
+    snis: ~
+    id: 4bb50404-6e40-4b9c-bacb-d12d769eaab3
+    name: ~
+    https_redirect_status_code: 426
+    strip_path: false
+    headers: ~
+    request_buffering: true
+    sources: ~
+    response_buffering: true
+    destinations: ~
+    service: fea35f20-7c43-47f5-8e67-1f525f5ffad0
+    paths:
+      - /users
+    methods: ~
+    protocols:
+      - http
+      - https
+    tags: ~
+    path_handling: v0
+    preserve_host: false
+    hosts: ~
+  - regex_priority: 0
+    created_at: 1711360989
+    updated_at: 1711360989
+    snis: ~
+    id: ab051ceb-816e-4d00-bb27-87ef8f986225
+    name: ~
+    https_redirect_status_code: 426
+    strip_path: true
+    headers: ~
+    request_buffering: true
+    sources: ~
+    response_buffering: true
+    destinations: ~
+    service: eb56f8e8-034b-4e07-a69a-ed433a49211c
+    paths:
+      - /docs
+    methods: ~
+    protocols:
+      - http
+      - https
+    tags: ~
+    path_handling: v0
+    preserve_host: false
+    hosts: ~
+  - regex_priority: 0
+    created_at: 1711892983
+    updated_at: 1711893109
+    snis: ~
+    id: b5163163-3cc0-4002-96b1-c64b67fd4a0b
+    name: ~
+    https_redirect_status_code: 426
+    strip_path: true
+    headers: ~
+    request_buffering: true
+    sources: ~
+    response_buffering: true
+    destinations: ~
+    service: fba18bfb-c799-4ce2-a5e1-3bd9a3124d8c
+    paths:
+      - /node
+    methods: ~
+    protocols:
+      - http
+      - https
+    tags: ~
+    path_handling: v0
+    preserve_host: false
+    hosts: ~
+  - regex_priority: 0
+    created_at: 1711302113
+    updated_at: 1711302113
+    snis: ~
+    id: ec75bdbf-03a1-436c-b2fd-f9434169ce59
+    name: ~
+    https_redirect_status_code: 426
+    strip_path: true
+    headers: ~
+    request_buffering: true
+    sources: ~
+    response_buffering: true
+    destinations: ~
+    service: 4c8780ff-83ee-4ace-9f84-2c9ba8995baa
+    paths:
+      - /python
+    methods: ~
+    protocols:
+      - http
+      - https
+    tags: ~
+    path_handling: v0
+    preserve_host: false
+    hosts: ~
