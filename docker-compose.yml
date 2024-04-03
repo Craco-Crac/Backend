@@ -61,7 +61,6 @@ services:
 
   python-service:
     build: ./python_micro
-    container_name: py-serv
     networks:
       - kong-net
 
