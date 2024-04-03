@@ -7,32 +7,16 @@ services:
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: "/etc/kong/kong.yml"
-      KONG_ADMIN_LISTEN: '0.0.0.0:8001, 0.0.0.0:8444 ssl'
     ports:
       - "8000:8000" # Proxy
       - "8443:8443" # Proxy SSL
       - "8001:8001" # Admin API
       - "8444:8444" # Admin API SSL
+    volumes:
+      - ./kongConf:/etc/kong
     networks:
       - kong-net
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: 'rabbitmq'
-    hostname: rabbitmq
-    environment:
-      - RABBITMQ_DEFAULT_USER=rmuser
-      - RABBITMQ_DEFAULT_PASS=rmpassword
-      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
-    ports:
-      - 15672:15672
-      - 5672:5672
-    volumes:
-      - rabbit-mq-data:/var/lib/rabbitmq
-      - rabbit-mq-logs:/var/log/rabbitmq
-      - ./rabbit-mq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-    networks:
-      - kong-net
 
   docs:
     build: ./docs
