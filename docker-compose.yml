@@ -1,16 +1,5 @@
 version: '3'
 services:
-  kong-database:
-    image: postgres:16.2
-    container_name: kong-database
-    environment:
-      POSTGRES_USER: kong
-      POSTGRES_PASSWORD: kong
-      POSTGRES_DB: kong
-    networks:
-      - kong-net
-    volumes:
-      - kong-db-data:/var/lib/postgresql/data
 
   kong:
     image: kong:latest
@@ -24,8 +13,6 @@ services:
       - "8443:8443" # Proxy SSL
       - "8001:8001" # Admin API
       - "8444:8444" # Admin API SSL
-    depends_on:
-      - kong-database
     networks:
       - kong-net
 
@@ -95,7 +82,6 @@ networks:
     driver: bridge
 
 volumes:
-  kong-db-data:
   rabbit-mq-data:
   rabbit-mq-logs:
   users-db-data:
