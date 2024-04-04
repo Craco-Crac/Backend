@@ -21,11 +21,12 @@ paths:
         "500":
           description: Internal server error
 
-  /users/delete/{username}:
+  /users/delete/{param}:
     delete:
       tags:
         - Users
-      summary: Delete a user by ID
+      summary: Delete a user by username or email
+      description: You can put username or email in the path parameter
       parameters:
         - in: path
           name: username
@@ -146,9 +147,9 @@ components:
     User:
       type: object
       properties:
-        id:
-          type: integer
-        name:
+        password:
+          type: string
+        username:
           type: string
         email:
           type: string

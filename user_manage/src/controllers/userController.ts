@@ -22,7 +22,7 @@ export const getAllUsers = async (req: Request, res: Response) => { // eslint-di
         try {
             const users = await client.query('SELECT * FROM "users"."credentials"');
             console.log("Got users:", users.rows);
-            res.json(users.rows); // Use .json for JSON response
+            res.json(users.rows);
         }
         catch (error) {
             console.error('Error getting users:', error);
@@ -46,7 +46,10 @@ export const addUser = async (req: Request, res: Response) => { // eslint-disabl
         res.status(400).json({ message: "Password is required" });
     }
     if (!username) {
-        res.status(400).json({ message: "Password is required" });
+        res.status(400).json({ message: "Username is required" });
+    }
+    if (!email) {
+        res.status(400).json({ message: "Email is required" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log('add user');
@@ -84,24 +87,25 @@ export const addUser = async (req: Request, res: Response) => { // eslint-disabl
 }
 
 export const deleteUser = async (req: Request, res: Response) => {
-    const { username } = req.params;
+    const param = req.params.username;
 
-    console.log('Deleting user:', username);
+    console.log('Deleting user:', param);
     try {
         const client = await pool.connect();
         try {
+            const inQuery = param.includes('@') ? 'email' : 'username';
 
-            const userCheckResult = await client.query('SELECT FROM users.credentials WHERE username = $1', [username]);
+            const userCheckResult = await client.query(`SELECT * FROM users.credentials WHERE ${inQuery} = $1` , [param]);
             if (userCheckResult.rowCount === 0) {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            const deleteQuery = 'DELETE FROM users.credentials WHERE username = $1 RETURNING id;';
-            const deleteResult = await client.query(deleteQuery, [username]);
+            const deleteQuery = `DELETE FROM users.credentials WHERE ${inQuery} = $1 RETURNING id;`;
+            const deleteResult = await client.query(deleteQuery, [param]);
 
             if (deleteResult.rowCount) {
-                console.log(`User deleted successfully: ${username}`);
-                res.status(200).json({ message: "User deleted successfully", username });
+                console.log(`User deleted successfully: ${param}`);
+                res.status(200).json({ message: "User deleted successfully", param });
             } else {
                 res.status(404).json({ message: "User not found" });
             }
