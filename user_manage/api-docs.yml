@@ -3,7 +3,7 @@ info:
   title: User Service API
   version: "1.0"
 paths:
-  /node/users:
+  /users/all:
     get:
       tags:
         - Users

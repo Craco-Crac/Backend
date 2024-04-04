@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import pool from '../db';
 import bcrypt from 'bcrypt';
 // export const createUser = (req: Request, res: Response) => {// eslint-disable-line
@@ -8,6 +8,13 @@ import bcrypt from 'bcrypt';
 // export const getUser = (req: Request, res: Response) => {// eslint-disable-line
 //     // Logic to get a user
 // };
+
+// Serve swagger
+export const docs = async (req: Request, res: Response, next: NextFunction) => {
+    console.log("hehe")
+    if (req.originalUrl == "/docs") return res.redirect('docs/')
+    next()
+};
 
 export const getAllUsers = async (req: Request, res: Response) => { // eslint-disable-line
     try {
