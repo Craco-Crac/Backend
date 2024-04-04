@@ -67,22 +67,21 @@ paths:
                   error:
                     type: string
                     example: "Error sending message to RabbitMQ"
-  /users/{id}:
-    get:
+  /users/delete/{username}:
+    delete:
       tags:
         - Users
-      summary: Get a user by ID
-      description: Retrieve a single user by their unique identifier
+      summary: Delete a user by ID
       parameters:
         - in: path
-          name: id
+          name: username
           required: true
           schema:
-            type: integer
-          description: Unique identifier of the user to retrieve
+            type: string
+          description: The username of the user to delete
       responses:
         '200':
-          description: A user object
+          description: A user object and message
           content:
             application/json:
               schema:

@@ -23,12 +23,17 @@ export const getAllUsers = async (req: Request, res: Response) => { // eslint-di
             const users = await client.query('SELECT * FROM "users"."credentials"');
             console.log("Got users:", users.rows);
             res.json(users.rows); // Use .json for JSON response
+        }
+        catch(error) {
+            console.error('Error getting users:', error);
+            res.status(500).json({ message: "An error occurred while fetching users. Please try again later." });
+
         } finally {
             client.release();
         }
     } catch (error) {
         console.error('Error getting users:', error);
-        res.status(500).json({ message: "An error occurred while fetching users. Please try again later." });
+        res.status(500).send({ message: "An error occurred while whilte connecting to DB" })
     }
 
 };
