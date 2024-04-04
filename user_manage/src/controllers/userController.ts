@@ -95,7 +95,7 @@ export const deleteUser = async (req: Request, res: Response) => {
         try {
             const inQuery = param.includes('@') ? 'email' : 'username';
 
-            const userCheckResult = await client.query(`SELECT * FROM users.credentials WHERE ${inQuery} = $1` , [param]);
+            const userCheckResult = await client.query(`SELECT FROM users.credentials WHERE ${inQuery} = $1`, [param]);
             if (userCheckResult.rowCount === 0) {
                 return res.status(404).json({ message: "User not found" });
             }
@@ -121,6 +121,43 @@ export const deleteUser = async (req: Request, res: Response) => {
         console.error('Error deleting user:', error);
         res.status(500).json({ message: "An error occurred while connecting to DB" })
     }
+};
+
+export const login = async (req: Request, res: Response) => { // eslint-disable-line
+    const username = req.body.username;
+    const password = req.body.password;
+    try {
+        const client = await pool.connect();
+        try {
+            const users = await client.query('SELECT * FROM users.credentials WHERE username = $1', [username]);
+            if (users.rowCount === 0) {
+                return res.status(404).json({ message: "User not found" });
+            }
+            bcrypt.compare(password, users.rows[0].password, (error, result) => {
+                if (error) {
+                    console.log('Error in bcrypt', result);
+                    res.status(500).json({ message: "An error occurred while verifying the password" });
+                } else if (result) {
+                    console.log('Password verified');
+                    res.status(200).json({ message: "Login successful", user: users.rows[0] });
+                } else {
+                    console.log('Password not verified');
+                    res.status(401).json({ message: "Password is incorrect" });
+                }
+            });
+        }
+        catch (error) {
+            console.error('Error getting users:', error);
+            res.status(500).json({ message: "An error occurred while fetching users. Please try again later." });
+
+        } finally {
+            client.release();
+        }
+    } catch (error) {
+        console.error('Error getting users:', error);
+        res.status(500).send({ message: "An error occurred while whilte connecting to DB" })
+    }
+
 };
 
 // eslint-disable-next-line
