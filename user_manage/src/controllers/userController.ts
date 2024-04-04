@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import pool from '../db';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 // export const createUser = (req: Request, res: Response) => {// eslint-disable-line
 //     // Logic to create a user
 // };
@@ -11,12 +12,11 @@ import bcrypt from 'bcrypt';
 
 // Serve swagger
 export const docs = async (req: Request, res: Response, next: NextFunction) => {
-    console.log("hehe")
     if (req.originalUrl == "/docs") return res.redirect('docs/')
     next()
 };
 
-export const getAllUsers = async (req: Request, res: Response) => { // eslint-disable-line
+export const getAllUsers = async (req: Request, res: Response) => { 
     try {
         const client = await pool.connect();
         try {
@@ -38,7 +38,7 @@ export const getAllUsers = async (req: Request, res: Response) => { // eslint-di
 
 };
 
-export const addUser = async (req: Request, res: Response) => { // eslint-disable-line
+export const addUser = async (req: Request, res: Response) => { 
     const password = req.body.password;
     const username = req.body.username;
     const email = req.body.email;
@@ -123,13 +123,13 @@ export const deleteUser = async (req: Request, res: Response) => {
     }
 };
 
-export const login = async (req: Request, res: Response) => { // eslint-disable-line
+export const login = async (req: Request, res: Response) => {
     const username = req.body.username;
     const password = req.body.password;
     try {
         const client = await pool.connect();
         try {
-            const users = await client.query('SELECT * FROM users.credentials WHERE username = $1', [username]);
+            const users = await client.query('SELECT password, id FROM users.credentials WHERE username = $1', [username]);
             if (users.rowCount === 0) {
                 return res.status(404).json({ message: "User not found" });
             }
@@ -139,7 +139,11 @@ export const login = async (req: Request, res: Response) => { // eslint-disable-
                     res.status(500).json({ message: "An error occurred while verifying the password" });
                 } else if (result) {
                     console.log('Password verified');
-                    res.status(200).json({ message: "Login successful", user: users.rows[0] });
+                    const token = jwt.sign({ "id": users.rows[0].id, "username": username },
+                        'yourSecretKey', { expiresIn: '1h' });
+                    console.log(token)
+                    res.cookie('token', token, { httpOnly: true, secure: true });
+                    res.status(200).json({ message: "Authenticated", "jwt": token });
                 } else {
                     console.log('Password not verified');
                     res.status(401).json({ message: "Password is incorrect" });

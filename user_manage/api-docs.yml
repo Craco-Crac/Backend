@@ -94,6 +94,73 @@ paths:
                     example: "An error occurred while adding the user"
 
 
+  /users/login:
+      post:
+        tags:
+          - Users
+        summary: User login
+        description: Allows users to login by providing a username and password.
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: "john_doe"
+                  password:
+                    type: string
+                    example: "12345"
+                required:
+                  - username
+                  - password
+        responses:
+          '200':
+            description: Authenticated
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: "Authenticated"
+                    jwt:
+                      type: string
+                      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJqb2huX2RvZSIsImlhdCI6MTUxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          '401':
+            description: Password is incorrect
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: "Password is incorrect"
+          '404':
+            description: User not found
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: "User not found"
+          '500':
+            description: Server error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: "An error occurred. Please try again later."
+
   /node/send:
     post:
       summary: Send a message
@@ -153,3 +220,8 @@ components:
           type: string
         email:
           type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
