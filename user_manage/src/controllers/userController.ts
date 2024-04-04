@@ -24,7 +24,7 @@ export const getAllUsers = async (req: Request, res: Response) => { // eslint-di
             console.log("Got users:", users.rows);
             res.json(users.rows); // Use .json for JSON response
         }
-        catch(error) {
+        catch (error) {
             console.error('Error getting users:', error);
             res.status(500).json({ message: "An error occurred while fetching users. Please try again later." });
 
@@ -42,6 +42,9 @@ export const addUser = async (req: Request, res: Response) => { // eslint-disabl
     const password = req.body.password;
     const username = req.body.username;
     if (!password) {
+        res.status(400).json({ message: "Password is required" });
+    }
+    if (!username) {
         res.status(400).json({ message: "Password is required" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);

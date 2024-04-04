@@ -10,16 +10,89 @@ paths:
       summary: Returns a list of users
       description: Retrieve a list of users from the system
       responses:
-        '200':
+        "200":
           description: A JSON array of user objects
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
-        '500':
+                  $ref: "#/components/schemas/User"
+        "500":
           description: Internal server error
+
+  /users/delete/{username}:
+    delete:
+      tags:
+        - Users
+      summary: Delete a user by ID
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: The username of the user to delete
+      responses:
+        "200":
+          description: A user object and message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+          
+  /users/add:
+    post:
+      tags:
+        - Users
+      summary: Add a user
+      description: Creates a new user that will be saved in DB
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        "201":
+          description: User added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: "User added successfully"
+        "400":
+          description: Bad request - Password is required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Password is required"
+        "500":
+          description: Internal Server Error - Error sending message to RabbitMQ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "An error occurred while adding the user"
+
+
   /node/send:
     post:
       summary: Send a message
@@ -67,29 +140,6 @@ paths:
                   error:
                     type: string
                     example: "Error sending message to RabbitMQ"
-  /users/delete/{username}:
-    delete:
-      tags:
-        - Users
-      summary: Delete a user by ID
-      parameters:
-        - in: path
-          name: username
-          required: true
-          schema:
-            type: string
-          description: The username of the user to delete
-      responses:
-        '200':
-          description: A user object and message
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: User not found
-        '500':
-          description: Internal server error
 
 components:
   schemas:
