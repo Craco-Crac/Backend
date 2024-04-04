@@ -41,6 +41,7 @@ export const getAllUsers = async (req: Request, res: Response) => { // eslint-di
 export const addUser = async (req: Request, res: Response) => { // eslint-disable-line
     const password = req.body.password;
     const username = req.body.username;
+    const email = req.body.email;
     if (!password) {
         res.status(400).json({ message: "Password is required" });
     }
@@ -54,12 +55,12 @@ export const addUser = async (req: Request, res: Response) => { // eslint-disabl
         try {
 
             const insertQuery = `
-          INSERT INTO users.credentials (username, password)
-          VALUES ($1, $2)
+          INSERT INTO users.credentials (username, password, email)
+          VALUES ($1, $2, $3)
           RETURNING id;`;
 
 
-            const ans = await client.query(insertQuery, [username, hashedPassword]);
+            const ans = await client.query(insertQuery, [username, hashedPassword, email]);
             console.log("New user added with ID:", ans.rows[0].id);
             res.status(201).send({ id: ans.rows[0].id, message: "User added successfully" });
         } catch (error) {
