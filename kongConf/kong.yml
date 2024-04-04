@@ -2,55 +2,39 @@ _format_version: "3.0"
 _transform: false
 
 services:
-  - created_at: 1711302100
-    updated_at: 1711302100
-    name: python
+  - name: python
     host: python-service
     port: 3000
-    protocol: http
 
-  - created_at: 1711319584
-    updated_at: 1711319584
-    name: docs
+  - name: docs
     host: docs
     port: 3000
-    protocol: http
 
-  - created_at: 1711291153
-    updated_at: 1711291153
-    name: node_s
+  - name: node_s
     host: node-service
     port: 3000
-    protocol: http
 
-  - created_at: 1711898626
-    updated_at: 1711898626
-    name: user_management
+  - name: user_management
     host: user-manage
     port: 3000
-    protocol: http
 
 routes:
   - service: user_management
     paths:
       - /users
-    protocols:
-      - http
+    strip_path: true
 
   - service: docs
     paths:
       - /docs
-    protocols:
-      - http
+    strip_path: true
 
   - service: node_s
     paths:
       - /node
-    protocols:
-      - http
+    strip_path: true
 
   - service: python
     paths:
       - /python
-    protocols:
-      - http
+    strip_path: true
