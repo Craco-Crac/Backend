@@ -2,6 +2,18 @@ import { Request, Response, NextFunction } from 'express';
 import pool from '../db';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { z } from 'zod';
+
+// Define a schema for the data you expect
+function isValidEmail(email: string): boolean {
+    const emailSchema = z.string().email();
+    try {
+        emailSchema.parse(email); // Attempt to parse the email
+        return true; // If parsing succeeds, email is valid
+    } catch {
+        return false; // If parsing fails, email is invalid
+    }
+}
 // export const createUser = (req: Request, res: Response) => {// eslint-disable-line
 //     // Logic to create a user
 // };
@@ -16,7 +28,7 @@ export const docs = async (req: Request, res: Response, next: NextFunction) => {
     next()
 };
 
-export const getAllUsers = async (req: Request, res: Response) => { 
+export const getAllUsers = async (req: Request, res: Response) => {
     try {
         const client = await pool.connect();
         try {
@@ -38,18 +50,15 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 };
 
-export const addUser = async (req: Request, res: Response) => { 
+export const addUser = async (req: Request, res: Response) => {
     const password = req.body.password;
     const username = req.body.username;
     const email = req.body.email;
-    if (!password) {
-        res.status(400).json({ message: "Password is required" });
+    if (!password || !username || !email) {
+        return res.status(400).json({ message: "Password, username and email are required" });
     }
-    if (!username) {
-        res.status(400).json({ message: "Username is required" });
-    }
-    if (!email) {
-        res.status(400).json({ message: "Email is required" });
+    if(!isValidEmail(email)) {
+        return res.status(400).json({ message: "Invalid email" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log('add user');
@@ -72,7 +81,7 @@ export const addUser = async (req: Request, res: Response) => {
                 client.release();
             }
             if (error && (error as Record<string, string>)?.code === '23505') {
-                res.status(409).send({ message: "Username already exists" });
+                res.status(409).send({ message: "Username or email already exists" });
             } else {
                 res.status(500).send({ message: "An error occurred while adding the user" });
             }

@@ -6,7 +6,9 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "start": "npm run build && pm2-runtime start ecosystem.config.cjs",
+    "create-schema": "ts-node src/DBscripts/CreateSchema.ts",
+    "start-app": "pm2-runtime start ecosystem.config.cjs",
+    "start": "npm run create-schema && npm run start-app",
     "build": "tsc",
     "dev": "nodemon --exec ts-node src/index.ts",
     "watch": "tsc -w"
@@ -25,7 +27,8 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "ts-node": "^10.9.2",
-    "yamljs": "^0.3.0"
+    "yamljs": "^0.3.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

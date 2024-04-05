@@ -73,7 +73,7 @@ paths:
                     type: string
                     example: "User added successfully"
         "400":
-          description: Bad request - Password is required
+          description: Bad request - incorrect data from user
           content:
             application/json:
               schema:
@@ -83,7 +83,7 @@ paths:
                     type: string
                     example: "Password is required"
         "500":
-          description: Internal Server Error - Error sending message to RabbitMQ
+          description: Internal Server Error
           content:
             application/json:
               schema:
@@ -99,7 +99,7 @@ paths:
         tags:
           - Users
         summary: User login
-        description: Allows users to login by providing a username and password.
+        description: Allows users to login by providing a username and password. JWT will be saved in user's cookie automaticaly
         requestBody:
           required: true
           content:

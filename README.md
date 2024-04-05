@@ -1,1 +1,3 @@
-# Microservices
+# Set-up
+
+- docker-compose up

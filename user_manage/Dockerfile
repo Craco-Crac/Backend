@@ -17,5 +17,7 @@ COPY . .
 # Make port available to the world outside this container
 EXPOSE 3000
 
+RUN npm run build
+
 # Define command to run the app
 CMD ["npm", "start"]
