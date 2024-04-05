@@ -7,10 +7,12 @@ ecdsa==0.18.0
 fastapi==0.110.1
 h11==0.14.0
 idna==3.6
+psycopg2-binary==2.9.9
 pyasn1==0.6.0
 pycparser==2.22
 pydantic==2.6.4
 pydantic_core==2.16.3
+python-dotenv==1.0.1
 python-jose==3.3.0
 python-multipart==0.0.9
 rsa==4.9
