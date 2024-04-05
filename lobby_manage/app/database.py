@@ -36,7 +36,7 @@ def drop_tables():
 
 def create_tables():
     with PgDatabase() as db:
-        db.cursor.execute(f"""CREATE TABLE lobbies (
+        db.cursor.execute(f"""CREATE TABLE IF NOT EXISTS lobbies (
             id SERIAL PRIMARY KEY,
             title VARCHAR(255),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
