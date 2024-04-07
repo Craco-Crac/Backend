@@ -14,10 +14,19 @@ services:
     host: user-manage
     port: 3000
 
+  - name: game
+    host: game-process
+    port: 3000
+
 routes:
   - service: user_management
     paths:
       - /users
+    strip_path: false
+
+  - service: game
+    paths:
+      - /game
     strip_path: false
 
   - service: docs
