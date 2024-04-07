@@ -3,7 +3,7 @@ import pool from '../db';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
-
+import 'dotenv/config';
 // Define a schema for the data you expect
 function isValidEmail(email: string): boolean {
     const emailSchema = z.string().email();
@@ -57,7 +57,7 @@ export const addUser = async (req: Request, res: Response) => {
     if (!password || !username || !email) {
         return res.status(400).json({ message: "Password, username and email are required" });
     }
-    if(!isValidEmail(email)) {
+    if (!isValidEmail(email)) {
         return res.status(400).json({ message: "Invalid email" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -138,6 +138,10 @@ export const login = async (req: Request, res: Response) => {
     try {
         const client = await pool.connect();
         try {
+            const secrete = process.env.JWT_SECRET;
+            if (!secrete) {
+                throw Error('JWT_secret not set');
+            }
             const users = await client.query('SELECT password, id FROM users.credentials WHERE username = $1', [username]);
             if (users.rowCount === 0) {
                 return res.status(404).json({ message: "User not found" });
@@ -149,7 +153,7 @@ export const login = async (req: Request, res: Response) => {
                 } else if (result) {
                     console.log('Password verified');
                     const token = jwt.sign({ "id": users.rows[0].id, "username": username },
-                        'yourSecretKey', { expiresIn: '1h' });
+                        secrete, { expiresIn: '1h' });
                     console.log(token)
                     res.cookie('token', token, { httpOnly: true, secure: true });
                     res.status(200).json({ message: "Authenticated", "jwt": token });
