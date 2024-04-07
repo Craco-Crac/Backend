@@ -33,6 +33,31 @@ services:
     networks:
       - kong-net
 
+  lobby-service:
+    build: ./lobby_manage
+    environment:
+      DB_HOST: lobby-database
+      DB_USER: lobby_service
+      DB_PASS: lobby_password
+      DB_NAME: lobby_db
+    depends_on:
+      - lobby-database
+    networks:
+      - kong-net
+      - lobby-net
+
+  lobby-database:
+    image: postgres:16.2
+    container_name: lobby-database
+    environment:
+      POSTGRES_USER: lobby_service
+      POSTGRES_PASSWORD: lobby_password
+      POSTGRES_DB: lobby_db
+    volumes:
+      - lobby-db-data:/var/lib/postgresql/data
+    networks:
+      - lobby-net
+
   users-database:
     image: postgres:16.2
     container_name: ${USERS_DB_HOST}
@@ -65,8 +90,12 @@ networks:
     driver: bridge
   users-net:
     driver: bridge
+  lobby-net:
+    driver: bridge
 
 volumes:
   rabbit-mq-data:
   rabbit-mq-logs:
   users-db-data:
+  lobby-db-data:
+

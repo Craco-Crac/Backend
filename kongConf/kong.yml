@@ -18,6 +18,10 @@ services:
     host: user-manage
     port: 3000
 
+  - name: lobby
+    host: lobby-service
+    port: 3000
+
 routes:
   - service: user_management
     paths:
@@ -37,4 +41,9 @@ routes:
   - service: python
     paths:
       - /python
+    strip_path: true
+
+  - service: lobby
+    paths:
+      - /lobby
     strip_path: true
