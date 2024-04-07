@@ -36,10 +36,10 @@ services:
   lobby-service:
     build: ./lobby_manage
     environment:
-      DB_HOST: lobby-database
-      DB_USER: lobby_service
-      DB_PASS: lobby_password
-      DB_NAME: lobby_db
+      DB_HOST: ${LOBBY_DB_HOST}
+      DB_USER: ${LOBBY_DB_USER}
+      DB_PASS: ${LOBBY_DB_PASS}
+      DB_NAME: ${LOBBY_DB_NAME}
     depends_on:
       - lobby-database
     networks:
@@ -50,9 +50,9 @@ services:
     image: postgres:16.2
     container_name: lobby-database
     environment:
-      POSTGRES_USER: lobby_service
-      POSTGRES_PASSWORD: lobby_password
-      POSTGRES_DB: lobby_db
+      POSTGRES_USER: ${LOBBY_DB_USER}
+      POSTGRES_PASSWORD: ${LOBBY_DB_PASS}
+      POSTGRES_DB: ${LOBBY_DB_NAME}
     volumes:
       - lobby-db-data:/var/lib/postgresql/data
     networks:

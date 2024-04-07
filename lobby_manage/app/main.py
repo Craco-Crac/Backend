@@ -17,11 +17,6 @@ async def startup_config():
         logger.error(f'{ex}')
 
 
-@app.get("/")
-async def root_of_root():
-    return {"message": "Hello"}
-
-
 @app.delete("/table")
 async def delete_table():
     try:
@@ -44,3 +39,43 @@ async def create_table():
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Error {e}"
         )
+
+
+"""
+    get lobbies get"lobby"
+    get lobby by id get"lobby/id"
+    create lobby post"lobby"
+    delete lobby delete"lobby/id"
+    join lobby  post"lobby/id/join"
+    leave lobby post"lobby/id/leave"
+"""
+
+
+@app.get("/", summary="Get lobby list")
+async def get_lobbies():
+    return {"lobbies": "lobby list"}
+
+
+@app.get("/{lobby_id}", summary="Get a single lobby by ID")
+async def get_lobby(lobby_id: int):
+    pass
+
+
+@app.post("/", summary="Create a new lobby")
+async def create_lobby():
+    pass
+
+
+@app.delete("/{lobby_id}", summary="Delete a lobby by ID")
+async def delete_lobby(lobby_id: int):
+    pass
+
+
+@app.post("/{lobby_id}/join", summary="Join a lobby by ID")
+async def join_lobby(lobby_id: int):
+    pass
+
+
+@app.post("/{lobby_id}/leave", summary="Leave a lobby by ID")
+async def leave_lobby(lobby_id: int):
+    pass
