@@ -10,4 +10,4 @@ __pycache__
 .idea
 .DS_Store
 dist
-.env
+.env.example
