@@ -2,10 +2,6 @@ _format_version: "3.0"
 _transform: false
 
 services:
-  - name: python
-    host: python-service
-    port: 3000
-
   - name: docs
     host: docs
     port: 3000
@@ -34,7 +30,3 @@ routes:
       - /node
     strip_path: true
 
-  - service: python
-    paths:
-      - /python
-    strip_path: true

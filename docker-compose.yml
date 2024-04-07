@@ -23,11 +23,6 @@ services:
     networks:
       - kong-net
 
-  python-service:
-    build: ./python_micro
-    networks:
-      - kong-net
-
   node-service:
     build: ./node_serv
     networks:
@@ -58,6 +53,12 @@ services:
       - users-database
     networks:
       - users-net
+      - kong-net
+
+  game-process:
+    build: ./game_process
+    container_name: game_process
+    networks:
       - kong-net
 
 networks:
