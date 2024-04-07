@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import WebSocket from 'ws';
+import { sendToRoom } from '../utils/sendToRooms';
 
-// In-memory storage for rooms
 export const rooms: Record<string, {
     admins: Set<WebSocket>; users: Set<WebSocket>;
     maxAdmins: number; correctAnswer: string | null;
@@ -24,7 +24,8 @@ export const createRoom = (req: Request, res: Response) => {
 
 export const startRound = (req: Request, res: Response) => {
 
-    const finishTime = Date.now() + parseInt(req.body.roundTime as string);
+    const delayUntilFinish = parseInt(req.body.delayUntilFinish as string);
+    const finishTime = Date.now() + delayUntilFinish;
     const ans = req.body.answer as string;
     if (!finishTime || !ans) {
         res.status(400).json({ error: 'Please provide a valid finish time and answer' });
@@ -33,28 +34,15 @@ export const startRound = (req: Request, res: Response) => {
     rooms[roomId].roundFinish = finishTime;
     rooms[roomId].correctAnswer = ans;
 
-    const currentTime = Date.now();
-    const delayUntilFinish = finishTime - currentTime;
+    sendToRoom(roomId, JSON.stringify({ type: "round-start", delayUntilFinish: delayUntilFinish }));
 
     setTimeout(() => {
-        sendToRoom(roomId, "The round has ended. Here's the correct answer: ...");
+        if (rooms[roomId].correctAnswer) {
+            rooms[roomId].correctAnswer = null;
+            rooms[roomId].roundFinish = null;
+            sendToRoom(roomId, JSON.stringify({ type: "round-finish", correctAnswer: ans }));
+        }
     }, delayUntilFinish);
     res.status(200).json({ roomId });
 
 };
-
-function sendToRoom(roomId: string, message: string) {
-    const room = rooms[roomId];
-    if (!room) {
-        console.error(`Room ${roomId} does not exist`);
-        return;
-    }
-
-    // Send message to all admins
-    [...rooms[roomId].admins, ...rooms[roomId].users].forEach(client => {
-        if (client && client.readyState === WebSocket.OPEN) {
-            client.send(message);
-        }
-    });
-
-}
