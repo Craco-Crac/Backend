@@ -1,4 +1,5 @@
 import { rooms } from '../controllers/roomController';
+import { WebSocket } from 'ws';
 
 export const sendToRoom = (roomId: string, message: string) => {
     const room = rooms[roomId];

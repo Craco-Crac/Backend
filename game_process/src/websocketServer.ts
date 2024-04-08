@@ -1,8 +1,9 @@
-import WebSocket, { WebSocketServer } from 'ws';
+import { WebSocket, WebSocketServer } from 'ws';
 import { rooms } from './controllers/roomController';
 import { Server as HttpServer } from 'http';
 import cookie from 'cookie';
 import { sendToRoom } from './utils/sendToRooms';
+
 
 export const setupWebSocketServer = (server: HttpServer) => {
   const wss = new WebSocketServer({
@@ -27,7 +28,7 @@ export const setupWebSocketServer = (server: HttpServer) => {
   });
 
   wss.on('connection', (ws, req) => {
-
+    ws.isAlive = true;
     const cookies = cookie.parse(req.headers.cookie || '');
     const roomId = new URL(req.url!, `http://${req.headers.host}`).searchParams.get('roomId');
     const role = new URL(req.url!, `http://${req.headers.host}`).searchParams.get('role');
@@ -48,24 +49,33 @@ export const setupWebSocketServer = (server: HttpServer) => {
     }
 
     ws.on('message', (message) => {
-      console.log(cookies);
+      // console.log(cookies);
+      const objMessage = JSON.parse(message.toString('utf8'));
+      if (objMessage.type === 'pong') {
+        ws.isAlive = true;
+      }
+      else {
+        [...rooms[roomId].admins, ...rooms[roomId].users].forEach(client => {
+          if (client && client !== ws && client.readyState === WebSocket.OPEN) {
+            console.log(message.toString('utf8'));
+            client.send(message.toString('utf8')); //{type: 'chat', text: message}
+          }
+        });
 
-      [...rooms[roomId].admins, ...rooms[roomId].users].forEach(client => {
-        if (client && client !== ws && client.readyState === WebSocket.OPEN) {
-          console.log(message.toString('utf8'));
-          client.send(message.toString('utf8')); //{type: 'chat', text: message.toString('utf8')}
-        }
-      });
+        if (role === 'user' && objMessage.type === 'chat') {
+          console.log(objMessage.text);
+          console.log(rooms[roomId].correctAnswer);
+          if (objMessage.text === rooms[roomId].correctAnswer) {
+            console.log("here")
 
-      if (role === 'user') {
-        if (message.toString('utf8') === rooms[roomId].correctAnswer) {
-          rooms[roomId].correctAnswer = null;
-          rooms[roomId].roundFinish = null;
+            sendToRoom(roomId, JSON.stringify({
+              type: 'correct',
+              correctAnswer: rooms[roomId].correctAnswer, winner: "fake" //change later
+            }));
 
-          sendToRoom(roomId, JSON.stringify({
-            type: 'correct',
-            correctAnswer: rooms[roomId].correctAnswer, winner: "fake" //change later
-          }));
+            rooms[roomId].correctAnswer = null;
+            rooms[roomId].roundFinish = null;
+          }
         }
       }
     });
@@ -78,4 +88,13 @@ export const setupWebSocketServer = (server: HttpServer) => {
       }
     });
   });
+
+  setInterval(() => {
+    wss.clients.forEach((ws) => {
+      if (ws.isAlive === false) return ws.terminate();
+
+      ws.isAlive = false;
+      ws.send(JSON.stringify({ type: 'ping' }));
+    });
+  }, 30000);
 };

@@ -22,6 +22,17 @@ export const createRoom = (req: Request, res: Response) => {
     res.status(201).json({ roomId });
 };
 
+export const deleteRoom = (req: Request, res: Response) => {
+    const roomId = req.params.roomId;
+    if (rooms[roomId]) {
+        delete rooms[roomId];
+        console.log(`Room with ID ${roomId} has been deleted.`);
+    } else {
+        console.log(`Room with ID ${roomId} does not exist.`);
+    }
+    res.status(204).json({ roomId });
+};
+
 export const startRound = (req: Request, res: Response) => {
 
     const delayUntilFinish = parseInt(req.body.delayUntilFinish as string);
@@ -31,6 +42,9 @@ export const startRound = (req: Request, res: Response) => {
         res.status(400).json({ error: 'Please provide a valid finish time and answer' });
     }
     const roomId = req.params.roomId;
+    if(!rooms[roomId]) {
+        return res.status(400).json({ error: 'Room does not exist' });
+    }
     rooms[roomId].roundFinish = finishTime;
     rooms[roomId].correctAnswer = ans;
 
