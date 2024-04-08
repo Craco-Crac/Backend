@@ -27,7 +27,7 @@ export const setupWebSocketServer = (server: HttpServer) => {
     }
   });
 
-  wss.on('connection', (ws, req) => {
+  wss.on('connection', (ws: WebSocket, req) => {
     ws.isAlive = true;
     const cookies = cookie.parse(req.headers.cookie || '');
     const roomId = new URL(req.url!, `http://${req.headers.host}`).searchParams.get('roomId');
@@ -63,10 +63,7 @@ export const setupWebSocketServer = (server: HttpServer) => {
         });
 
         if (role === 'user' && objMessage.type === 'chat') {
-          console.log(objMessage.text);
-          console.log(rooms[roomId].correctAnswer);
           if (objMessage.text === rooms[roomId].correctAnswer) {
-            console.log("here")
 
             sendToRoom(roomId, JSON.stringify({
               type: 'correct',
@@ -90,7 +87,7 @@ export const setupWebSocketServer = (server: HttpServer) => {
   });
 
   setInterval(() => {
-    wss.clients.forEach((ws) => {
+    wss.clients.forEach((ws: WebSocket) => {
       if (ws.isAlive === false) return ws.terminate();
 
       ws.isAlive = false;
