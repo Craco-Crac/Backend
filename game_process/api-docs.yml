@@ -1,0 +1,126 @@
+openapi: 3.0.0
+info:
+  title: User Service API
+  version: "1.0"
+paths:
+  
+  /delete/{roomId}:
+    delete:
+      tags:
+        - rooms
+      summary: Delete a room
+      description: put Id
+      parameters:
+        - in: path
+          name: Id
+          required: true
+          schema:
+            type: string
+          description: Id of the room  that will be deleted
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+          
+  /start/{roomId}:
+    post:
+      tags:
+        - round
+      summary: Start round
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                delayUntilFinish: 
+                  type: integer
+                  example: 60000
+                answer: 
+                  type: string
+                  example: "Correct"
+              required:
+                - delayUntilFinish
+                - answer
+      responses:
+        "200":
+          description: Round started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: example
+        "400":
+          description: Bad request - incorrect data from user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Please provide a valid finish time and answer"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error while sending to room"
+
+
+  /create:
+      post:
+        tags:
+          - rooms
+        summary: Creates a new game room
+        description: This endpoint creates a new game room with a specified maximum number of admins.
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  admins:
+                    type: string
+                    description: The maximum number of admins allowed in the room. Must be a valid number.
+                required:
+                  - admins
+        responses:
+          '201':
+            description: Successfully created a new game room
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    roomId:
+                      type: string
+                      description: The unique identifier for the newly created room.
+          '400':
+            description: Bad request due to invalid input
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      description: Error message indicating the nature of the bad request.
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
