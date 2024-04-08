@@ -2,7 +2,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { rooms } from './controllers/roomController';
 import { Server as HttpServer } from 'http';
 import cookie from 'cookie';
-import { sendToRoom } from './utils/sendToRooms';
+import { sendToRoom } from './utils/roomUtils';
 
 
 export const setupWebSocketServer = (server: HttpServer) => {
@@ -34,13 +34,13 @@ export const setupWebSocketServer = (server: HttpServer) => {
     const role = new URL(req.url!, `http://${req.headers.host}`).searchParams.get('role');
 
     if (!roomId || !rooms[roomId] || (role !== 'admin' && role !== 'user')) {
-      ws.close(1000, 'Invalid request');
+      ws.close(4001, 'Invalid roomId or role');
       return;
     }
 
     if (role === 'admin') {
       if (rooms[roomId].admins.size >= rooms[roomId].maxAdmins) {
-        ws.close(1000, 'Room already has the maximum number of admins.');
+        ws.close(4002, 'Room already has the maximum number of admins.');
         return;
       }
       rooms[roomId].admins.add(ws);
@@ -74,7 +74,7 @@ export const setupWebSocketServer = (server: HttpServer) => {
             }));
 
             rooms[roomId].correctAnswer = null;
-            rooms[roomId].roundFinish = null;
+            rooms[roomId].roundFinishtime = null;
           }
         }
       }
@@ -82,9 +82,9 @@ export const setupWebSocketServer = (server: HttpServer) => {
 
     ws.on('close', () => {
       if (role === 'admin') {
-        rooms[roomId].admins.delete(ws);
+        rooms[roomId]?.admins.has(ws) ? rooms[roomId].admins.delete(ws) : null;
       } else {
-        rooms[roomId].users.delete(ws);
+        rooms[roomId]?.users.has(ws) ? rooms[roomId].users.delete(ws) : null;
       }
     });
   });
