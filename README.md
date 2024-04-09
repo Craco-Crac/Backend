@@ -20,4 +20,4 @@ Main idea is to try different features of DevOps and Backend in practice (list i
 - ```docker-compose up```
 
 ## Docs
-localhost:8000/docs
+ [localhost:8000/docs](http://localhost:8000/docs)
