@@ -97,8 +97,8 @@ paths:
   /users/login:
       post:
         tags:
-          - Users
-        summary: User login
+          - Authentication
+        summary: Login user
         description: Allows users to login by providing a username and password. JWT will be saved in user's cookie automaticaly
         requestBody:
           required: true
@@ -160,6 +160,73 @@ paths:
                     message:
                       type: string
                       example: "An error occurred. Please try again later."
+
+  /users/logout:
+    get:
+      tags:
+        - Authentication
+      summary: Logs out the current user
+      description: Clears the user's session by removing the `authToken` cookie, effectively logging them out. The cookie is configured with `HttpOnly` and `Secure` flags for enhanced security.
+      responses:
+        '200':
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Logged out successfully'
+        '500':
+          description: Server error occurred during the logout process
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'Error occurred during logout'
+
+  /users/auth/check:
+    get:
+      tags:
+        - Authentication
+      summary: Check Authentication Status
+      description: Checks if the user is authenticated based on the JWT token provided in cookies.
+      operationId: authCheck
+      responses:
+        '200':
+          description: The token is valid, and the user is authenticated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isAuthenticated:
+                    type: boolean
+                    example: true
+        '401':
+          description: Unauthorized. The token is missing, invalid, or not provided.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isAuthenticated:
+                    type: boolean
+                    example: false
+        '500':
+          description: Server error occurred while verifying the token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: An error occurred while verifying token.
 
   /node/send:
     post:
