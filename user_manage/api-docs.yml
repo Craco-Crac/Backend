@@ -49,17 +49,33 @@ paths:
   /users/add:
     post:
       tags:
-        - Users
-      summary: Add a user
-      description: Creates a new user that will be saved in DB
+      - Users
+      summary: Add a new user
+      description: Adds a new user to the system with a username, email, and password.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  format: password
+                  example: supersecurepassword
+              required:
+                - username
+                - email
+                - password
       responses:
-        "201":
+        '201':
           description: User added successfully
           content:
             application/json:
@@ -71,30 +87,39 @@ paths:
                     example: 1
                   message:
                     type: string
-                    example: "User added successfully"
-        "400":
-          description: Bad request - incorrect data from user
+                    example: User added successfully
+        '400':
+          description: Bad request (missing parameters or invalid email)
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
+                  message:
                     type: string
-                    example: "Password is required"
-        "500":
-          description: Internal Server Error
+                    example: Password, username and email are required
+        '409':
+          description: Username or email already exists
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
+                  message:
                     type: string
-                    example: "An error occurred while adding the user"
+                    example: Username or email already exists
+        '500':
+          description: An error occurred while adding the user or connecting to the DB
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: An error occurred while adding the user
 
-
-  /users/login:
+  /users/auth/login:
       post:
         tags:
           - Authentication
@@ -161,7 +186,7 @@ paths:
                       type: string
                       example: "An error occurred. Please try again later."
 
-  /users/logout:
+  /users/auth/logout:
     get:
       tags:
         - Authentication
