@@ -218,32 +218,37 @@ paths:
     get:
       tags:
         - Authentication
-      summary: Check Authentication Status
-      description: Checks if the user is authenticated based on the JWT token provided in cookies.
-      operationId: authCheck
+      summary: Check Authentication Token
+      description: Verifies the JWT token provided in the `AuthToken` cookie and returns the token's decoded payload if valid.
       responses:
         '200':
-          description: The token is valid, and the user is authenticated.
+          description: The token is valid, and the payload is returned.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  isAuthenticated:
-                    type: boolean
-                    example: true
+                  username:
+                    type: string
+                    description: The username of the user.
+                  id:
+                    type: string
+                    description: The unique identifier for the user.
+                  iat:
+                    type: integer
+                    description: Issued at timestamp for the token.
+                  exp:
+                    type: integer
+                    description: Expiration timestamp for the token.
+                  # Add other decoded payload properties as needed
+              example:
+                userId: "1234567890"
+                iat: 1615967389
+                exp: 1616000389
         '401':
-          description: Unauthorized. The token is missing, invalid, or not provided.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  isAuthenticated:
-                    type: boolean
-                    example: false
+          description: Unauthorized. The token is invalid or not provided.
         '500':
-          description: Server error occurred while verifying the token.
+          description: An error occurred while verifying the token.
           content:
             application/json:
               schema:
@@ -251,7 +256,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: An error occurred while verifying token.
+                    example: "An error occurred while verifying token."
 
   /node/send:
     post:

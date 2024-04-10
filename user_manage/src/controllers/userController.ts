@@ -171,30 +171,36 @@ export const login = async (req: Request, res: Response) => {
 
 export const authCheck = async (req: Request, res: Response) => {
     const verifyToken = (token: string) => {
-        if (!token) {
-            return res.status(401).json({ isAuthenticated: false });
-        }
-
-        const secret = process.env.JWT_SECRET;
-        if (!secret) {
-            throw Error('JWT_secret not set');
-        }
-        jwt.verify(token, secret, (err, decoded) => {
-            if (err) {
-                console.error('Token verification failed:', err);
-                return false;
+        return new Promise((resolve, reject) => {
+            if (!token) {
+                resolve(false);
+                return;
             }
 
-            console.log('Token is valid. Payload:', decoded);
-            return true;
-        });
+            const secret = process.env.JWT_SECRET;
+            if (!secret) {
+                reject(new Error('JWT_SECRET not set'))
+                return;
+            }
+
+            jwt.verify(token, secret, (err, decoded) => {
+                if (err) {
+                    console.error('Token verification failed:', err);
+                    resolve(false);
+                    return;
+                }
+
+                console.log('Token is valid. Payload:', decoded);
+                resolve(decoded);
+                return;
+            });
+        })
     }
 
-    const token = req.cookies.authToken;
     try {
-        const isValid = verifyToken(token);
-        isValid ? res.status(401) : res.status(200);
-        return res.json({ isAuthenticated: isValid });
+        const token = req.cookies.AuthToken;
+        const isValid = await verifyToken(token);
+        return isValid ? res.status(200).send(isValid) : res.status(401).send();
     }
     catch (e) {
         console.log("error in verifyToken: " + e);
