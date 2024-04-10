@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import 'dotenv/config';
-// Define a schema for the data you expect
+
 function isValidEmail(email: string): boolean {
     const emailSchema = z.string().email();
     try {
@@ -14,14 +14,6 @@ function isValidEmail(email: string): boolean {
         return false; // If parsing fails, email is invalid
     }
 }
-// export const createUser = (req: Request, res: Response) => {// eslint-disable-line
-//     // Logic to create a user
-// };
-
-// export const getUser = (req: Request, res: Response) => {// eslint-disable-line
-//     // Logic to get a user
-// };
-
 // Serve swagger
 export const docs = async (req: Request, res: Response, next: NextFunction) => {
     if (req.originalUrl == "/docs") return res.redirect('docs/')
@@ -155,7 +147,7 @@ export const login = async (req: Request, res: Response) => {
                     const token = jwt.sign({ "id": users.rows[0].id, "username": username },
                         secrete, { expiresIn: '1h' });
                     console.log(token)
-                    res.cookie('token', token, { httpOnly: true, secure: true });
+                    res.cookie('AuthToken', token, { httpOnly: true, secure: true });
                     res.status(200).json({ message: "Authenticated", "jwt": token });
                 } else {
                     console.log('Password not verified');
@@ -176,6 +168,45 @@ export const login = async (req: Request, res: Response) => {
     }
 
 };
+
+export const authCheck = async (req: Request, res: Response) => {
+    const verifyToken = (token: string) => {
+        return new Promise((resolve, reject) => {
+            if (!token) {
+                resolve(false);
+                return;
+            }
+
+            const secret = process.env.JWT_SECRET;
+            if (!secret) {
+                reject(new Error('JWT_SECRET not set'))
+                return;
+            }
+
+            jwt.verify(token, secret, (err, decoded) => {
+                if (err) {
+                    console.error('Token verification failed:', err);
+                    resolve(false);
+                    return;
+                }
+
+                console.log('Token is valid. Payload:', decoded);
+                resolve(decoded);
+                return;
+            });
+        })
+    }
+
+    try {
+        const token = req.cookies.AuthToken;
+        const isValid = await verifyToken(token);
+        return isValid ? res.status(200).send(isValid) : res.status(401).send();
+    }
+    catch (e) {
+        console.log("error in verifyToken: " + e);
+        res.status(500).send({ message: "An error occurred while verifying token" })
+    }
+}
 
 // eslint-disable-next-line
 // export const deleteUser = (req: Request, res: Response) => {

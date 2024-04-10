@@ -2,7 +2,7 @@ import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import path from 'path';
-import { docs, getAllUsers, addUser, deleteUser, login } from '../controllers/userController';
+import { docs, getAllUsers, addUser, deleteUser, login, authCheck } from '../controllers/userController';
 import { getSchemas, getTables } from '../controllers/dbController';
 const router = express.Router();
 
@@ -22,5 +22,10 @@ router.get('/tables', getTables);
 router.post('/add', addUser);
 router.delete('/:username', deleteUser);
 
-router.post('/login', login);
+router.post('/auth/login', login);
+router.get('/auth/logout', (req, res) => {
+    res.clearCookie('authToken', { httpOnly: true, secure: true });
+    res.status(200).json({ message: 'Logged out successfully' });
+});
+router.get('/auth/check', authCheck);
 export default router;

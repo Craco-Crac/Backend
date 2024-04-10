@@ -49,17 +49,33 @@ paths:
   /users/add:
     post:
       tags:
-        - Users
-      summary: Add a user
-      description: Creates a new user that will be saved in DB
+      - Users
+      summary: Add a new user
+      description: Adds a new user to the system with a username, email, and password.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  format: password
+                  example: supersecurepassword
+              required:
+                - username
+                - email
+                - password
       responses:
-        "201":
+        '201':
           description: User added successfully
           content:
             application/json:
@@ -71,34 +87,43 @@ paths:
                     example: 1
                   message:
                     type: string
-                    example: "User added successfully"
-        "400":
-          description: Bad request - incorrect data from user
+                    example: User added successfully
+        '400':
+          description: Bad request (missing parameters or invalid email)
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
+                  message:
                     type: string
-                    example: "Password is required"
-        "500":
-          description: Internal Server Error
+                    example: Password, username and email are required
+        '409':
+          description: Username or email already exists
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
+                  message:
                     type: string
-                    example: "An error occurred while adding the user"
+                    example: Username or email already exists
+        '500':
+          description: An error occurred while adding the user or connecting to the DB
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: An error occurred while adding the user
 
-
-  /users/login:
+  /users/auth/login:
       post:
         tags:
-          - Users
-        summary: User login
+          - Authentication
+        summary: Login user
         description: Allows users to login by providing a username and password. JWT will be saved in user's cookie automaticaly
         requestBody:
           required: true
@@ -160,6 +185,78 @@ paths:
                     message:
                       type: string
                       example: "An error occurred. Please try again later."
+
+  /users/auth/logout:
+    get:
+      tags:
+        - Authentication
+      summary: Logs out the current user
+      description: Clears the user's session by removing the `authToken` cookie, effectively logging them out. The cookie is configured with `HttpOnly` and `Secure` flags for enhanced security.
+      responses:
+        '200':
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Logged out successfully'
+        '500':
+          description: Server error occurred during the logout process
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'Error occurred during logout'
+
+  /users/auth/check:
+    get:
+      tags:
+        - Authentication
+      summary: Check Authentication Token
+      description: Verifies the JWT token provided in the `AuthToken` cookie and returns the token's decoded payload if valid.
+      responses:
+        '200':
+          description: The token is valid, and the payload is returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    description: The username of the user.
+                  id:
+                    type: string
+                    description: The unique identifier for the user.
+                  iat:
+                    type: integer
+                    description: Issued at timestamp for the token.
+                  exp:
+                    type: integer
+                    description: Expiration timestamp for the token.
+                  # Add other decoded payload properties as needed
+              example:
+                userId: "1234567890"
+                iat: 1615967389
+                exp: 1616000389
+        '401':
+          description: Unauthorized. The token is invalid or not provided.
+        '500':
+          description: An error occurred while verifying the token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred while verifying token."
 
   /node/send:
     post:
