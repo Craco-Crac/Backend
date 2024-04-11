@@ -1,5 +1,5 @@
 # Use the official Node.js 14 image from Docker Hub
-FROM node:18
+FROM --platform=linux/amd64 node:18
 
 # Create app directory
 WORKDIR /usr/src/app

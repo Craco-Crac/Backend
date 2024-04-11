@@ -23,11 +23,6 @@ services:
     networks:
       - kong-net
 
-  node-service:
-    build: ./node_serv
-    networks:
-      - kong-net
-
   users-database:
     image: postgres:16.2
     container_name: ${USERS_DB_HOST}
@@ -66,12 +61,9 @@ networks:
     driver: bridge
   users-net:
     driver: bridge
-  lobby-net:
-    driver: bridge
 
 volumes:
-  rabbit-mq-data:
-  rabbit-mq-logs:
   users-db-data:
   lobby-db-data:
+
 

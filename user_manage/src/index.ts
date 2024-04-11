@@ -3,8 +3,8 @@ import app from './app'; // Import the Express application
 
 // dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const PORT: number = Number(process.env.PORT) || 3000;
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0',() => {
   console.log(`User-manager service listening on port ${PORT}`);
 });
