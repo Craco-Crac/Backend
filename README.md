@@ -19,5 +19,7 @@ Main idea is to try different features of DevOps and Backend in practice (list i
 - Change .env.example to .env and fill in the values (for local test it is ok to leave the values as they are)
 - ```docker-compose up```
 
-## Docs
- [localhost:8000/docs](http://localhost:8000/docs)
+## Links
+- Docs: [localhost:8000/docs](http://localhost:8000/docs)
+- Frontend [https://github.com/Craco-Crac/Frontend/blob/master/README.md](https://github.com/Craco-Crac/Frontend/blob/master/README.md)
+
