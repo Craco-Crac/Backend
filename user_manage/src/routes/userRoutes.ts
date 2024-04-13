@@ -24,7 +24,7 @@ router.delete('/:username', deleteUser);
 
 router.post('/auth/login', login);
 router.get('/auth/logout', (req, res) => {
-    res.clearCookie('authToken', { httpOnly: true, secure: true });
+    res.clearCookie('AuthToken', { httpOnly: true, secure: true });
     res.status(200).json({ message: 'Logged out successfully' });
 });
 router.get('/auth/check', authCheck);
