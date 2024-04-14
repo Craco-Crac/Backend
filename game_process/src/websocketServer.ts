@@ -1,7 +1,6 @@
 import { WebSocket, WebSocketServer } from 'ws';
 import { rooms } from './controllers/roomController';
 import { Server as HttpServer } from 'http';
-import cookie from 'cookie';
 import { sendToRoom } from './utils/roomUtils';
 
 
@@ -29,7 +28,6 @@ export const setupWebSocketServer = (server: HttpServer) => {
 
   wss.on('connection', (ws: WebSocket, req) => {
     ws.isAlive = true;
-    const cookies = cookie.parse(req.headers.cookie || '');
     const roomId = new URL(req.url!, `http://${req.headers.host}`).searchParams.get('roomId');
     const role = new URL(req.url!, `http://${req.headers.host}`).searchParams.get('role');
 
@@ -49,7 +47,6 @@ export const setupWebSocketServer = (server: HttpServer) => {
     }
 
     ws.on('message', (message) => {
-      // console.log(cookies);
       const objMessage = JSON.parse(message.toString('utf8'));
       if (objMessage.type === 'pong') {
         ws.isAlive = true;
@@ -67,7 +64,8 @@ export const setupWebSocketServer = (server: HttpServer) => {
 
             sendToRoom(roomId, JSON.stringify({
               type: 'correct',
-              correctAnswer: rooms[roomId].correctAnswer, winner: "fake" //change later
+              correctAnswer: rooms[roomId].correctAnswer,
+              winner: objMessage.sender
             }));
 
             rooms[roomId].correctAnswer = null;
