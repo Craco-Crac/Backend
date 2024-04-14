@@ -1,5 +1,5 @@
 import { WebSocket, WebSocketServer } from 'ws';
-import { rooms } from './controllers/roomController';
+import { rooms } from './types/roomTypes';
 import { Server as HttpServer } from 'http';
 import { sendToRoom } from './utils/roomUtils';
 
@@ -92,4 +92,16 @@ export const setupWebSocketServer = (server: HttpServer) => {
       ws.send(JSON.stringify({ type: 'ping' }));
     });
   }, 30000);
+
+  setInterval(() => {
+    for (const [roomId, roomDetails] of Object.entries(rooms)) {
+      if (roomDetails.empty){
+        console.log(`Room ${roomId} is deleted due to long emptiness`)
+        delete rooms[roomId];
+      }
+      else{
+        rooms[roomId].empty = !roomDetails.admins.size && !roomDetails.users.size;
+      }
+    }
+  }, 300000);
 };

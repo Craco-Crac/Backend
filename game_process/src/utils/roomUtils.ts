@@ -1,4 +1,4 @@
-import { rooms } from '../controllers/roomController';
+import { rooms } from '../types/roomTypes';
 import { WebSocket } from 'ws';
 
 export const sendToRoom = (roomId: string, message: string) => {
@@ -8,7 +8,6 @@ export const sendToRoom = (roomId: string, message: string) => {
         return;
     }
 
-    // Send message to all admins
     [...rooms[roomId].admins, ...rooms[roomId].users].forEach(client => {
         if (client && client.readyState === WebSocket.OPEN) {
             client.send(message);

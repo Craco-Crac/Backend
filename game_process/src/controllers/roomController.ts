@@ -1,13 +1,7 @@
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import WebSocket from 'ws';
 import { sendToRoom, closeConnectionsInRoom } from '../utils/roomUtils';
-
-export const rooms: Record<string, {
-    admins: Set<WebSocket>; users: Set<WebSocket>;
-    maxAdmins: number; correctAnswer: string | null;
-    roundFinishtime: number | null; roundFinishTimeout: NodeJS.Timeout | undefined;
-}> = {};
+import { rooms } from '../types/roomTypes';
 
 export const createRoom = (req: Request, res: Response) => {
     const maxAdmins = parseInt(req.body.admins as string);
