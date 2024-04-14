@@ -1,7 +1,7 @@
 import { WebSocket, WebSocketServer } from 'ws';
-import { rooms } from './types/roomTypes';
+import { rooms } from '@/types/roomTypes';
 import { Server as HttpServer } from 'http';
-import { sendToRoom } from './utils/roomUtils';
+import { sendToRoom } from '@/utils/roomUtils';
 
 
 export const setupWebSocketServer = (server: HttpServer) => {

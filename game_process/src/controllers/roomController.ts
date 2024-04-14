@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { sendToRoom, closeConnectionsInRoom } from '../utils/roomUtils';
-import { rooms } from '../types/roomTypes';
+import { sendToRoom, closeConnectionsInRoom } from '@/utils/roomUtils';
+import { rooms } from '@/types/roomTypes';
 
 export const createRoom = (req: Request, res: Response) => {
     const maxAdmins = parseInt(req.body.admins as string);

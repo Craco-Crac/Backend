@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { Request, Response, NextFunction } from 'express';
-import { createRoom, startRound, deleteRoom } from '../controllers/roomController';
+import { createRoom, startRound, deleteRoom } from '@/controllers/roomController';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import path from 'path';

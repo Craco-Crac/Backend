@@ -1,6 +1,6 @@
-import app from './app';
+import app from '@/app';
 import { createServer } from 'http';
-import { setupWebSocketServer } from './websocketServer';
+import { setupWebSocketServer } from '@/websocketServer';
 
 const server = createServer(app);
 const PORT = Number(process.env.PORT) || 3000;

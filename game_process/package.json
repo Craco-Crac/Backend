@@ -11,6 +11,9 @@
     "start": "pm2-runtime start ecosystem.config.cjs",
     "watch": "tsc -w"
   },
+  "_moduleAliases": {
+    "@": "./src"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

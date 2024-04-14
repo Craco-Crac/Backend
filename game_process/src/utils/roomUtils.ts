@@ -1,4 +1,4 @@
-import { rooms } from '../types/roomTypes';
+import { rooms } from '@/types/roomTypes';
 import { WebSocket } from 'ws';
 
 export const sendToRoom = (roomId: string, message: string) => {

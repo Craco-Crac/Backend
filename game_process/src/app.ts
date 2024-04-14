@@ -1,5 +1,5 @@
 import express, { Express } from 'express';
-import roomRoutes from './routes/roomRoutes';
+import roomRoutes from '@/routes/roomRoutes';
 import cors from 'cors';
 const app: Express = express();
 
