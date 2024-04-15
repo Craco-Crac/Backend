@@ -1,3 +1,4 @@
+import 'module-alias/register';
 import app from '@/app';
 import { createServer } from 'http';
 import { setupWebSocketServer } from '@/websocketServer';

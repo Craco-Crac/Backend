@@ -1,6 +1,6 @@
 module.exports = { //eslint-disable-line
     apps: [{
-        name: "User_management",
+        name: "Game_process",
         script: "./dist/index.js",
         instances: 1,
         autorestart: true,

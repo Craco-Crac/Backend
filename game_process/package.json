@@ -12,7 +12,7 @@
     "watch": "tsc -w"
   },
   "_moduleAliases": {
-    "@": "./src"
+    "@": "./dist"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +27,7 @@
     "cookie": "^0.6.0",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "module-alias": "^2.2.3",
     "nodemon": "^3.1.0",
     "swagger-ui-express": "^5.0.0",
     "tsx": "^4.7.2",
