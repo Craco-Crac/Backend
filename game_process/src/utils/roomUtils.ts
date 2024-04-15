@@ -1,15 +1,15 @@
 import { rooms } from '@/types/roomTypes';
 import { WebSocket } from 'ws';
 
-export const sendToRoom = (roomId: string, message: string) => {
+export const sendToRoom = (roomId: string, message: string, senderWs?: WebSocket) => {
     const room = rooms[roomId];
     if (!room) {
         console.error(`Room ${roomId} does not exist`);
         return;
     }
 
-    [...rooms[roomId].admins, ...rooms[roomId].users].forEach(client => {
-        if (client && client.readyState === WebSocket.OPEN) {
+    [...room.admins, ...room.users].forEach(client => {
+        if (client && client.readyState === WebSocket.OPEN && client !== senderWs) {
             client.send(message);
         }
     });

@@ -1,8 +1,7 @@
 import { WebSocket, WebSocketServer } from 'ws';
 import { rooms } from '@/types/roomTypes';
 import { Server as HttpServer } from 'http';
-import { sendToRoom } from '@/utils/roomUtils';
-
+import { processMessage } from './utils/webSocketMessages';
 
 export const setupWebSocketServer = (server: HttpServer) => {
   const wss = new WebSocketServer({
@@ -47,32 +46,7 @@ export const setupWebSocketServer = (server: HttpServer) => {
     }
 
     ws.on('message', (message) => {
-      const objMessage = JSON.parse(message.toString('utf8'));
-      if (objMessage.type === 'pong') {
-        ws.isAlive = true;
-      }
-      else {
-        [...rooms[roomId].admins, ...rooms[roomId].users].forEach(client => {
-          if (client && client !== ws && client.readyState === WebSocket.OPEN) {
-            console.log(message.toString('utf8'));
-            client.send(message.toString('utf8')); //{type: 'chat', text: message}
-          }
-        });
-
-        if (role === 'user' && objMessage.type === 'chat') {
-          if (objMessage.text === rooms[roomId].correctAnswer) {
-
-            sendToRoom(roomId, JSON.stringify({
-              type: 'correct',
-              correctAnswer: rooms[roomId].correctAnswer,
-              winner: objMessage.sender
-            }));
-
-            rooms[roomId].correctAnswer = null;
-            rooms[roomId].roundFinishtime = null;
-          }
-        }
-      }
+      processMessage(ws, message.toString(), roomId, role);
     });
 
     ws.on('close', () => {
@@ -91,7 +65,7 @@ export const setupWebSocketServer = (server: HttpServer) => {
       ws.isAlive = false;
       ws.send(JSON.stringify({ type: 'ping' }));
     });
-  }, 30000);
+  }, 30 * 1000);
 
   setInterval(() => {
     for (const [roomId, roomDetails] of Object.entries(rooms)) {
@@ -103,5 +77,9 @@ export const setupWebSocketServer = (server: HttpServer) => {
         rooms[roomId].empty = !roomDetails.admins.size && !roomDetails.users.size;
       }
     }
-  }, 300000);
+  }, 180 * 1000);
+
+  // setInterval(() => {
+    
+  // }, 5 * 1000);
 };
