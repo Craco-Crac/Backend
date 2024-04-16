@@ -45,8 +45,16 @@ export const setupWebSocketServer = (server: HttpServer) => {
       rooms[roomId].users.add(ws);
     }
 
+
+    if (rooms[roomId].snapshot) {
+      ws.send(rooms[roomId].snapshot as Buffer);
+    }
+
     ws.on('message', (message) => {
-      processMessage(ws, message.toString(), roomId, role);
+      if (message instanceof Buffer) {
+        rooms[roomId].snapshot = message;
+      } else
+        processMessage(ws, message.toString(), roomId, role);
     });
 
     ws.on('close', () => {
@@ -69,17 +77,20 @@ export const setupWebSocketServer = (server: HttpServer) => {
 
   setInterval(() => {
     for (const [roomId, roomDetails] of Object.entries(rooms)) {
-      if (roomDetails.empty){
+      if (roomDetails.empty) {
         console.log(`Room ${roomId} is deleted due to long emptiness`)
         delete rooms[roomId];
       }
-      else{
+      else {
         rooms[roomId].empty = !roomDetails.admins.size && !roomDetails.users.size;
       }
     }
   }, 180 * 1000);
 
-  // setInterval(() => {
-    
-  // }, 5 * 1000);
+  setInterval(() => {
+    for (const [, roomDetails] of Object.entries(rooms)) {
+      if (roomDetails.admins.size)
+        roomDetails.admins.values().next().value.send(JSON.stringify({ type: 'req-snapshot' }));
+    }
+  }, 5 * 1000);
 };

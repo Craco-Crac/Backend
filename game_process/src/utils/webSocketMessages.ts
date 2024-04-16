@@ -7,7 +7,8 @@ export const processMessage = function(ws: WebSocket, message: string, roomId: s
 
     if (objMessage.type === 'pong') {
         ws.isAlive = true;
-    } else {
+    } 
+    else {
         broadcastToRoom(ws, roomId, message);
 
         if (role === 'user' && objMessage.type === 'chat' && objMessage.text) {

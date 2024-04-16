@@ -4,7 +4,7 @@ export interface Room {
     admins: Set<WebSocket>; users: Set<WebSocket>;
     maxAdmins: number; correctAnswer: string | null;
     roundFinishtime: number | null; roundFinishTimeout: NodeJS.Timeout | undefined;
-    empty?: boolean;
+    empty?: boolean; snapshot?: Buffer;
 }
 
 export const rooms: Record<string, Room> = {};
