@@ -51,10 +51,10 @@ export const setupWebSocketServer = (server: HttpServer) => {
     }
 
     ws.on('message', (message) => {
-      if (message instanceof Buffer) {
-        rooms[roomId].snapshot = message;
-      } else
+      if (message.toString().startsWith('{')) {
         processMessage(ws, message.toString(), roomId, role);
+      } else if (message instanceof Buffer)
+        rooms[roomId].snapshot = message;
     });
 
     ws.on('close', () => {
