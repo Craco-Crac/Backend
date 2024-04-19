@@ -143,11 +143,11 @@ export const login = async (req: Request, res: Response) => {
                     console.log('Error in bcrypt', result);
                     res.status(500).json({ message: "An error occurred while verifying the password" });
                 } else if (result) {
-                    console.log('Password verified');
+                    console.log('Password verified.');
                     const token = jwt.sign({ "id": users.rows[0].id, "username": username },
                         secrete, { expiresIn: '1h' });
                     console.log(token)
-                    res.cookie('AuthToken', token, { httpOnly: true, secure: true });
+                    res.cookie('AuthToken', token, { httpOnly: true, secure: true, sameSite: false });
                     res.status(200).json({ message: "Authenticated", "jwt": token });
                 } else {
                     console.log('Password not verified');
@@ -173,6 +173,7 @@ export const authCheck = async (req: Request, res: Response) => {
     const verifyToken = (token: string) => {
         return new Promise((resolve, reject) => {
             if (!token) {
+                console.log('no Token');
                 resolve(false);
                 return;
             }
@@ -196,7 +197,7 @@ export const authCheck = async (req: Request, res: Response) => {
             });
         })
     }
-
+    
     try {
         const token = req.cookies.AuthToken;
         const isValid = await verifyToken(token);
