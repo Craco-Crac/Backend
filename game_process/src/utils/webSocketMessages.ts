@@ -14,7 +14,7 @@ export const processMessage = function(ws: WebSocket, message: string, roomId: s
         broadcastToRoom(ws, roomId, message);
 
         if (role === 'user' && objMessage.type === 'chat' && objMessage.text) {
-            checkForCorrectAnswer(objMessage, roomId, ws);
+            checkForCorrectAnswer(objMessage, roomId);
         }
     }
 }
@@ -22,20 +22,20 @@ export const processMessage = function(ws: WebSocket, message: string, roomId: s
 function broadcastToRoom(ws: WebSocket, roomId: string, message: string): void {
     [...rooms[roomId].admins, ...rooms[roomId].users].forEach(client => {
         if (client !== ws && client.readyState === WebSocket.OPEN) {
-            console.log(message);
             client.send(message);
         }
     });
 }
 
-function checkForCorrectAnswer(message: Message, roomId: string, senderWs?: WebSocket): void {
+function checkForCorrectAnswer(message: Message, roomId: string): void {
     if (message.text === rooms[roomId].correctAnswer) {
         sendToRoom(roomId, JSON.stringify({
             type: 'correct',
             correctAnswer: rooms[roomId].correctAnswer,
             winner: message.sender
-        }), senderWs);
+        }));
 
+        clearTimeout(rooms[roomId].roundFinishTimeout);
         rooms[roomId].correctAnswer = null;
         rooms[roomId].roundFinishtime = null;
     }

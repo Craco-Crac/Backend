@@ -53,7 +53,7 @@ export const addUser = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Invalid email" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log('add user');
+    console.log('add user: ', username, hashedPassword, email);
     try {
         const client = await pool.connect();
         try {
@@ -190,8 +190,6 @@ export const authCheck = async (req: Request, res: Response) => {
                     resolve(false);
                     return;
                 }
-
-                console.log('Token is valid. Payload:', decoded);
                 resolve(decoded);
                 return;
             });

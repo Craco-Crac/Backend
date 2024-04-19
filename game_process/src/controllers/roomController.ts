@@ -24,7 +24,7 @@ export const deleteRoom = (req: Request, res: Response) => {
             closeConnectionsInRoom(roomId);
         }
         catch (e) {
-            console.log(e)
+            console.log('Error while closing connections in room' + e)
             res.status(500).json({ error: 'Error while closing connections in room' });
         }
         clearTimeout(rooms[roomId].roundFinishTimeout);
@@ -56,7 +56,7 @@ export const startRound = (req: Request, res: Response) => {
     try {
         sendToRoom(roomId, JSON.stringify({ type: "round-start", delayUntilFinish: delayUntilFinish }));
     } catch (e) {
-        console.log(e);
+        console.log('Error while sending to room' + e);
         return res.status(500).json({ error: 'Error while sending to room' });
     }
 
