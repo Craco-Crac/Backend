@@ -4,10 +4,7 @@ import { sendToRoom } from '@/utils/roomUtils';
 
 export const processMessage = function(ws: WebSocket, message: string, roomId: string, role: string): void {
     const objMessage = JSON.parse(message);
-    if(objMessage.type === 'snapshot') {
-        rooms[roomId].snapshot = objMessage.snapshot;
-    }
-    else if (objMessage.type === 'pong') {
+    if (objMessage.type === 'pong') {
         ws.isAlive = true;
     } 
     else {

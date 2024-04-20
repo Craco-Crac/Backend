@@ -1,17 +1,22 @@
 import { rooms } from '@/types/roomTypes';
 import { WebSocket } from 'ws';
 
-export const sendToRoom = (roomId: string, message: string, senderWs?: WebSocket) => {
+export const sendToRoom = (roomId: string, message: string | Buffer, senderWs?: WebSocket, checkFunc?: (wsForCheck?: WebSocket) => boolean) => {
     const room = rooms[roomId];
     if (!room) {
         console.error(`Room ${roomId} does not exist`);
         return;
     }
 
-    [...room.admins, ...room.users].forEach(client => {
-        if (client && client.readyState === WebSocket.OPEN && client !== senderWs) {
-            client.send(message);
-        }
+    [...room.admins, ...room.users].forEach((client: WebSocket) => {
+        if (client && client.readyState === WebSocket.OPEN && client !== senderWs &&
+            (!checkFunc || checkFunc(client)))
+            if (message instanceof Buffer) {
+                client.send(message as Buffer);
+                client.needsSnapshot = false;
+            }
+            else
+                client.send(message);
     });
 
 }
