@@ -147,7 +147,7 @@ export const login = async (req: Request, res: Response) => {
                     const token = jwt.sign({ "id": users.rows[0].id, "username": username },
                         secrete, { expiresIn: '1h' });
                     console.log(token)
-                    res.cookie('AuthToken', token, { httpOnly: true, secure: true, sameSite: false });
+                    res.cookie('AuthToken', token, { httpOnly: true, secure: true });
                     res.status(200).json({ message: "Authenticated", "jwt": token });
                 } else {
                     console.log('Password not verified');
@@ -164,7 +164,7 @@ export const login = async (req: Request, res: Response) => {
         }
     } catch (error) {
         console.error('Error getting users:', error);
-        res.status(500).send({ message: "An error occurred while whilte connecting to DB" })
+        res.status(500).send({ message: "An error occurred while connecting to DB" })
     }
 
 };
