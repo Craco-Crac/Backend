@@ -39,7 +39,7 @@ services:
     build: ./user_manage
     container_name: user_manager
     environment:
-      DB_HOST: ${USERS_DB_HOST} 
+      DB_HOST: ${USERS_DB_HOST}
       DB_USER: ${USERS_DB_USER}
       DB_PASS: ${USERS_DB_PASS}
       DB_NAME: ${USERS_DB_NAME}
@@ -50,9 +50,46 @@ services:
       - users-net
       - kong-net
 
+  stats-mongodb:
+    image: mongo:latest
+    container_name: stats-mongodb
+    hostname: stats-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - "27017:27017"
+    volumes:
+      - stats-mongodb-data:/data/db
+    networks:
+      - stats-net
+
+  stats:
+    build: ./stats
+    container_name: stats
+    networks:
+      - kong-net
+      - stats-net
+
   game-process:
     build: ./game_process
     container_name: game_process
+    networks:
+      - kong-net
+
+  rabbitmq:
+    image: rabbitmq:3.8-management
+    hostname: 'rabbitmq'
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: "root"
+      RABBITMQ_DEFAULT_PASS: "root"
+    depends_on:
+      - stats
+      - stats-mongodb
     networks:
       - kong-net
 
@@ -61,9 +98,11 @@ networks:
     driver: bridge
   users-net:
     driver: bridge
+  stats-net:
+    driver: bridge
 
 volumes:
   users-db-data:
   lobby-db-data:
-
+  stats-mongodb-data:
 

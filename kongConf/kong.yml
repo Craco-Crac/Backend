@@ -18,11 +18,20 @@ services:
     host: game-process
     port: 3000
 
+  - name: stats
+    host: stats
+    port: 3000
+
 routes:
   - service: user_management
     paths:
       - /users
-    strip_path: false
+    strip_path: true
+
+  - service: stats
+    paths:
+      - /stats
+    strip_path: true
 
   - service: game
     paths:

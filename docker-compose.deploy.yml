@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
 
   kong-database:
@@ -30,7 +30,7 @@ services:
       KONG_PROXY_LISTEN: '0.0.0.0:8000, 0.0.0.0:8443 ssl'
     ports:
       - "8000:8000" # Proxy
-      - "8443:8443" # Proxy SSL
+      - "443:8443" # Proxy SSL
       - "8001:8001" # Admin API
       - "8444:8444" # Admin API SSL
     depends_on:
@@ -71,9 +71,46 @@ services:
       - users-net
       - kong-net
 
+  stats-mongodb:
+    image: mongo:latest
+    container_name: stats-mongodb
+    hostname: mongodb-host
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - "27017:27017"
+    volumes:
+      - stats-mongodb-data:/data/db
+    networks:
+      - stats-net
+
+  stats:
+    build: ./stats
+    container_name: stats
+    networks:
+      - kong-net
+      - stats-net
+
   game-process:
     image: nikitavoitik/backend-game-process:latest
     container_name: game_process
+    networks:
+      - kong-net
+
+  rabbitmq:
+    image: rabbitmq:3.8-management
+    hostname: 'rabbitmq'
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: "root"
+      RABBITMQ_DEFAULT_PASS: "root"
+    depends_on:
+      - stats
+      - stats-mongodb
     networks:
       - kong-net
 
@@ -82,8 +119,12 @@ networks:
     driver: bridge
   users-net:
     driver: bridge
+  stats-net:
+    driver: bridge
 
 volumes:
   kong-db-data:
   users-db-data:
   lobby-db-data:
+  stats-mongodb-data:
+
