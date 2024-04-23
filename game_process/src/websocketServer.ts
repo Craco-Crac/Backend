@@ -1,8 +1,8 @@
 import { WebSocket, WebSocketServer } from 'ws';
 import { rooms } from '@/types/roomTypes';
 import { Server as HttpServer } from 'http';
-import { processMessage } from './utils/webSocketMessages';
-
+import { processMessage } from '@/utils/webSocketMessages';
+import { sendToRoom } from '@/utils/roomUtils'
 export const setupWebSocketServer = (server: HttpServer) => {
   const wss = new WebSocketServer({
     server,
@@ -40,21 +40,41 @@ export const setupWebSocketServer = (server: HttpServer) => {
         ws.close(4002, 'Room already has the maximum number of admins.');
         return;
       }
+      ws.needsSnapshot = true;
+      if (rooms[roomId].admins.size)
+        rooms[roomId].admins.values().next().value.send(JSON.stringify({ type: 'req-snapshot' }));
+      else if (rooms[roomId].users.size)
+        rooms[roomId].users.values().next().value.send(JSON.stringify({ type: 'req-snapshot' }));
+      else if (rooms[roomId].snapshot) {
+        ws.send(rooms[roomId].snapshot as Buffer);
+        ws.needsSnapshot = false;
+      }
+      //else{}
       rooms[roomId].admins.add(ws);
     } else {
+      ws.needsSnapshot = true;
+      if (rooms[roomId].admins.size)
+        rooms[roomId].admins.values().next().value.send(JSON.stringify({ type: 'req-snapshot' }));
+      else if (rooms[roomId].users.size)
+        rooms[roomId].users.values().next().value.send(JSON.stringify({ type: 'req-snapshot' }));
+      else if (rooms[roomId].snapshot) {
+        ws.send(rooms[roomId].snapshot as Buffer);
+        ws.needsSnapshot = false;
+      }
+
       rooms[roomId].users.add(ws);
     }
 
 
-    if (rooms[roomId].snapshot) {
-      ws.send(rooms[roomId].snapshot as Buffer);
-    }
-
     ws.on('message', (message) => {
       if (message.toString().startsWith('{')) {
         processMessage(ws, message.toString(), roomId, role);
-      } else if (message instanceof Buffer)
-        rooms[roomId].snapshot = message;
+      } else if (message instanceof Buffer) {
+        sendToRoom(roomId, message, ws, (wsForCheck?: WebSocket) => {
+          return wsForCheck?.needsSnapshot ? true : false;
+        });
+        rooms[roomId].snapshot = message as Buffer;
+      }
     });
 
     ws.on('close', () => {
@@ -87,10 +107,10 @@ export const setupWebSocketServer = (server: HttpServer) => {
     }
   }, 180 * 1000);
 
-  setInterval(() => {
-    for (const [, roomDetails] of Object.entries(rooms)) {
-      if (roomDetails.admins.size)
-        roomDetails.admins.values().next().value.send(JSON.stringify({ type: 'req-snapshot' }));
-    }
-  }, 5 * 1000);
+  // setInterval(() => {
+  //   for (const [, roomDetails] of Object.entries(rooms)) {
+  //     if (roomDetails.admins.size)
+  //       roomDetails.admins.values().next().value.send(JSON.stringify({ type: 'req-snapshot' }));
+  //   }
+  // }, 5 * 1000);
 };
