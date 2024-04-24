@@ -24,7 +24,7 @@ class PikaClient:
                         print('Received message')
                         try:
                             body = json.loads(message.body)
-                            self.process_callable(body)
+                            await self.process_callable(body)
                         except json.JSONDecodeError:
                             print('Received message could not be decoded as JSON')
                             continue
@@ -33,6 +33,5 @@ class PikaClient:
         await self.connection.close()
 
     async def send_message(self, message: dict):
-        """Method to publish message to RabbitMQ"""
         message = aio_pika.Message(body=json.dumps(message).encode())
         await self.channel.default_exchange.publish(message, routing_key='stats-receive')

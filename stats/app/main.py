@@ -40,17 +40,6 @@ async def startup_client():
     await app.connect()
 
 
-@app.post('/send-test-message')
-async def send_test_message():
-    await app.pika_client.send_message({'test': 'test'})
-    return {"status": "ok"}
-
-
-@app.get('/start')
-async def root():
-    return {"message": "Hello World"}
-
-
 @app.on_event("shutdown")
 async def shutdown_db_client():
     app.mongodb_client.close()
