@@ -18,8 +18,8 @@ services:
     host: game-process
     port: 3000
 
-  - name: stats
-    host: stats
+  - name: stats-rabbit
+    host: stats-rabbit
     port: 3000
 
 routes:
@@ -28,9 +28,9 @@ routes:
       - /users
     strip_path: true
 
-  - service: stats
+  - service: stats-rabbit
     paths:
-      - /stats
+      - /stats-rabbit
     strip_path: true
 
   - service: game

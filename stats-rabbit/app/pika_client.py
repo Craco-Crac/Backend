@@ -14,7 +14,7 @@ class PikaClient:
     async def connect(self):
         self.connection = await aio_pika.connect_robust("amqp://root:root@rabbitmq/")
         self.channel = await self.connection.channel()
-        self.queue = await self.channel.declare_queue('stats-receive')
+        self.queue = await self.channel.declare_queue('stats-rabbit-receive')
 
     async def consume(self):
         async with self.connection:
@@ -34,4 +34,4 @@ class PikaClient:
 
     async def send_message(self, message: dict):
         message = aio_pika.Message(body=json.dumps(message).encode())
-        await self.channel.default_exchange.publish(message, routing_key='stats-receive')
+        await self.channel.default_exchange.publish(message, routing_key='stats-rabbit-receive')

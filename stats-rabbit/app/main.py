@@ -25,14 +25,14 @@ class App(FastAPI):
         await task
 
 
-app = App(root_path='/stats')
+app = App(root_path='/stats-rabbit')
 
 
 @app.on_event("startup")
 async def startup_client():
     db_user = 'root'
     db_password = 'root'
-    db_host = 'stats-mongodb'
+    db_host = 'stats-rabbit-mongodb'
     app.mongodb_client = MongoClient(f"mongodb://{db_user}:{db_password}@{db_host}:27017")
     app.db = app.mongodb_client["stats_database"]
     app.collection = app.db["stats_collection"]

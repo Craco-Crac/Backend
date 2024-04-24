@@ -73,7 +73,7 @@ services:
 
   stats-mongodb:
     image: mongo:latest
-    container_name: stats-mongodb
+    container_name: stats-rabbit-mongodb
     hostname: mongodb-host
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
@@ -81,13 +81,13 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - stats-mongodb-data:/data/db
+      - stats-rabbit-mongodb-data:/data/db
     networks:
       - stats-net
 
   stats:
-    build: ./stats
-    container_name: stats
+    build: stats-rabbit
+    container_name: stats-rabbit
     networks:
       - kong-net
       - stats-net
