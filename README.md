@@ -9,9 +9,7 @@ Main idea is to try different features of DevOps and Backend in practice (list i
 - [x] IPC: Rabbit MQ
 - [x] WebSockets
 - [x] DB with SQL: Postgress
-- [ ] no-SQL DB: MongoDB
-- [ ] GitHub actions
-- [ ] Deploy
+- [x] Deploy
 
 ## Set-up
 
